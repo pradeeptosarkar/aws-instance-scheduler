@@ -1,0 +1,44 @@
+
+AWSTemplateFormatVersion: 2010-09-09 
+Metadata:
+  'AWS::CloudFormation::Designer': {}
+Parameters:
+  Region:
+    Description: Region where the main scheduler stack is run
+    Type: String
+    Default: "us-east-1"
+  StackName:
+    Description: Name of the CloudFormation Stack of the main scheduler
+    Type: String
+    Default: "StackName"
+Resources:
+  CTOfficehours:
+    Type: 'Custom::ServiceInstanceSchedule'
+    Properties:
+      Name: Connecticut-Office-Hours
+      NoStackPrefix: 'True'
+      Description: Office hours in Connecticut
+      ServiceToken:
+        !Join
+          - ''
+          - - 'arn:aws'
+            - ':lambda:'
+            - !Ref AWS::Region
+            - ':'
+            - !Ref AWS::AccountId
+            - ':function:'
+            - !Ref StackName
+            - '-InstanceSchedulerMain'
+      Enforced: 'True'
+      Hibernate: 'True'
+      Timezone: America/New_York
+      Periods:
+        - Description: Opening hours on weekdays
+          BeginTime: '08:00'
+          EndTime: '18:00'
+          WeekDays: Mon-Fri
+        - Description: Opening hours in weekend
+          BeginTime: '09:00'
+          EndTime: '17:00'
+          WeekDays: Sat-Sun
+  
